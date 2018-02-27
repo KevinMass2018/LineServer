@@ -24,13 +24,13 @@ const line_map_file = "line_map.txt"
 var total_line_num uint64
 
 /*
- * Preprocessor the to-be-served file and generate a line mapping file.
+ * Preprocessing the to-be-served file and generate a line mapping file.
  * The starting offset of each line in the to-be-served file is calculated   
- * and stored as binary BigEndian number in a fixed location, i.e, line*8, 
+ * and stored as binary BigEndian number in a fixed location, i.e, (line-1)*8, 
  * in the mapping file.
  *
  * This way, when client request a particular line, the server can open this
- * mapping file, go to location: line*8, and retreive the offset. Then open the 
+ * mapping file, go to location: (line-1)*8, and retreive the offset. Then open the 
  * to-be-served file, and Seek to this offset, and retrieve the line, and 
  * send back to the client
  */
