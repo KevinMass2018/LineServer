@@ -64,3 +64,15 @@ During this work, the following WebPage is consulted:
     And many others,...
 
 Totally spend two weeks in after hours for this work
+
+
+
+/**********************************/
+
+client.go is the separate code written to test lineserver performance.  The way to start client is:
+
+go run client.go <line-server-ip>:<line-server-port>
+
+E.g.: go run client.go 10.20.30.40:12345
+
+10.20.30.40 is the lineserver IP reachable by client.  12345 is the TCP port line server is listening to
