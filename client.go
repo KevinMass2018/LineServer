@@ -17,10 +17,10 @@ import (
  *
  ******************************************************/
 
-const  X_RANGE = 5000    // control how many lines to request
-const  Y_RANGE = 1500
+const  X_RANGE = 200    // control how many lines to request
+const  Y_RANGE = 2500
 const  X_SHIFT = 0       // control starting from which line
-const  CLIENT_COUNT = 50 // control simulate how many clients
+const  CLIENT_COUNT = 1 // control simulate how many clients
        
 
 func main() {
@@ -43,16 +43,21 @@ func main() {
 
      server := os.Args[1]
 
-     for  {
-       
-        for i:=0; i<CLIENT_COUNT ; i++ {
-            oneClientRequest(server)
+     for {
+     
+	flag := 0 
 
-	    /* Wait 10ms before starting another thread */
-	    duration, _ := time.ParseDuration("10ms")
-            time.Sleep(duration)
-	}    
-    }
+	if flag == 0 {       
+
+	   flag = 1
+	   for i:=0; i<CLIENT_COUNT ; i++ {
+                go   oneClientRequest(server)
+	   }    
+	}
+	/* Wait 10ms before starting another thread */
+	duration, _ := time.ParseDuration("100s")
+        time.Sleep(duration)
+    }	    
 
 }
 
@@ -110,7 +115,7 @@ func oneClientRequest (server string) {
 	 x = append(x, float64(line_idx))
 	 y = append(y, float64(elapsed)/1000)
 
-	 duration, _ := time.ParseDuration("1ms")
+	 duration, _ := time.ParseDuration("10ms")
 
 	 
 	 time.Sleep(duration)
@@ -141,6 +146,9 @@ func  latency_plot(x, y []float64, avg int) {
 
      avg = int(avg/1000)
 
+
+     plotfile_name := "plot"+strconv.Itoa(avg)
+
      fmt.Println("average", avg)
 
      pointGroupName := "Average latency per request " + strconv.Itoa(avg) + " us"
@@ -150,7 +158,7 @@ func  latency_plot(x, y []float64, avg int) {
         // Adding a point group
         plot.AddPointGroup(pointGroupName, style, points)
         // A plot type used to make points/ curves and customize and save them as an image.
-        plot.SetTitle("Latency: 1000 req/s, Single thread, 10GB")
+        plot.SetTitle("Latency: 100 req/s, 10 threads, 10GB")
         // Optional: Setting the title of the plot
         plot.SetXLabel("line-number")
         plot.SetYLabel("latency(us)")
@@ -158,7 +166,7 @@ func  latency_plot(x, y []float64, avg int) {
         plot.SetXrange(X_SHIFT, X_SHIFT+X_RANGE)
         plot.SetYrange(0, Y_RANGE)
         // Optional: Setting axis ranges
-        plot.SavePlot("plots/plot.png")
+        plot.SavePlot("plots/"+plotfile_name)
 }
 
 

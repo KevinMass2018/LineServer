@@ -22,7 +22,6 @@ const  SERVER_SUCCESS  =  5
 
 func handleClientRequest (conn net.Conn, req_chan  *chan string, filename string) {
 
-     defer conn.Close()
 
      for {
 
@@ -162,17 +161,16 @@ func  processGetRequest  (conn net.Conn,  result_arr []string,
              return CLIENT_INVALID
          }
 
-         linecontent, ret := getContentbyLine(uint64(line), filename)
+	 var linecontent string
+         ret := getContentbyLine(uint64(line), filename, &linecontent)
 
 	 if ret != SERVER_SUCCESS {
 	    return ret
 	 }
 
-	 /*
-	  * Sent the line content back to client
-	  */
-         fmt.Println("S <= OK")
-         fmt.Println("S <=",linecontent)
+         /*
+          * Sent the line content back to client
+          */
 
          var arr []byte
          arr = []byte(linecontent)
@@ -183,6 +181,10 @@ func  processGetRequest  (conn net.Conn,  result_arr []string,
             return SERVER_FAIL
       	 }
 
+         fmt.Println("S <= OK")
+         fmt.Println("S <=",linecontent)
+
+
 	 return CLIENT_VALID
 }
 
@@ -192,7 +194,8 @@ func  processGetRequest  (conn net.Conn,  result_arr []string,
  * This function returns the content of the line as a string, and a status code
  */
 
-func  getContentbyLine (orig_line uint64, filename string) (string, int) {
+func  getContentbyLine (orig_line uint64, filename string,
+      		        linecontent *string) (int) {
 
       /*
        * The line is stored in zero based system in line map file.
@@ -200,7 +203,7 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
        */
 
       if orig_line < 1 || orig_line > total_line_num {
-         return "ERR", CLIENT_INVALID
+         return CLIENT_INVALID
       }
 
       newLine := (uint64)(orig_line-1)
@@ -216,7 +219,7 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
 
       if mapfile == nil || err != nil {
          checkError(err)
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
       defer mapfile.Close()
@@ -228,14 +231,14 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
 
       if err != nil {
          checkError(err)
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
       rd := bufio.NewReader(mapfile)
 
       if rd == nil {
          fmt.Println("Map file reader can not be initialized")
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
       /*
@@ -251,7 +254,7 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
 
           if err != nil {
              checkError(err)
-             return "ERR", SERVER_FAIL
+             return SERVER_FAIL
           }
           offset_byte = append(offset_byte, tmp)
       }
@@ -270,7 +273,7 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
       orig_file, err := os.Open(filename)
       if err != nil {
          checkError(err)
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
       defer orig_file.Close()
@@ -279,7 +282,7 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
 
       if err != nil {
          checkError(err)
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
 
@@ -287,18 +290,18 @@ func  getContentbyLine (orig_line uint64, filename string) (string, int) {
 
       if rd_orig == nil {
          fmt.Println("Original file reader can not be initialized")
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
-      linecontent, err := rd_orig.ReadString('\n')
+      *linecontent, err = rd_orig.ReadString('\n')
 
       if err != nil {
          checkError(err)
-         return "ERR", SERVER_FAIL
+         return SERVER_FAIL
       }
 
 
-      return linecontent, SERVER_SUCCESS
+      return SERVER_SUCCESS
 
 }
 

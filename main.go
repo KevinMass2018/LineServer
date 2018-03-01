@@ -60,6 +60,7 @@ func main() {
      for {
 
      	 conn, err := listener.Accept()
+	 defer conn.Close()
 
 	 if err != nil {
 	    checkError(err)
