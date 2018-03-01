@@ -45,11 +45,30 @@ Automatic test includes:
 
 Summary:
 
-So far the code work pretty well in manual test cases.  
+So far the code works pretty well in manual test cases.  
 
-Further work and testing need to be done for concurrent/continuously sending client request from 100+ clients, and performance data will be updated to this repo when it is ready.
+The test results for multiple clients, multiple request per seconds against 1GB/10GB file:
+In this table, time is measured in clients for a round trip between a client request, and the complete line contents is received back by client.
 
-with 10GB file,  the system performs close to 1GB file, only about 5% latency difference in a limited test, could be due to other factors. 
+
+
+                                      100 request/second                          1000request/second
+                                      
+     single client (1GB file )               885us                                          594us
+     single client (10GB file)               658us                                          613us
+     10-client     (1GB file)                1906us                                         4707us 
+     10-client     (10GB file)               2002us                                         4686us
+     
+
+
+
+From the above table, with this algorithm, the file size only make difference in preprocessing.  It doesn't make too much difference in performance when serving client request. 
+
+For single clients, increasing client request rate from 100 to 1000 doesn't make too much difference, probably because server CPU is not a limitation in either case.
+
+For multiple clients case, increasing client request rate from 100 to 1000 make big difference in terms of round trip time. It's more than doubled. The server performance is downgraded with high frequence client request rate.
+
+
 
 Used package includes: bufio, os, net, strconv, encoding/binary, fmt, flag, time, strings, github.com/Arafatk/glot
 
@@ -63,7 +82,7 @@ During this work, the following WebPage is consulted:
     How to plot graph in golang
     And many others,...
 
-Totally spend two weeks in after hours for this work
+Spent about 20 hours in this work.
 
 
 
