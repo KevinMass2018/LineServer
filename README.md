@@ -81,24 +81,41 @@ For multiple clients case, increasing client request rate from 100 to 1000 make 
 Used package includes: bufio, os, net, strconv, encoding/binary, fmt, flag, time, strings, github.com/Arafatk/glot
 
 During this work, the following WebPage is consulted:  
+
     Golang TCP socket programming,  
+
     Each of the above package website,  
+
     Golang mutiple thread processing, 
+
     Golang control channel programing, 
+
     How to build golang executables for different target,  
+
     How to pass command auguments to bash scripts,
+
     How to plot graph in golang
+
     And many others,...
 
 Spent about 20 hours in this work.  The following is the time break down:
+
     4 hours learning golang
+
     4 hours design and implement the preprocessor, including went down a wrong road then with help from team get back on track
+
     2 hours implement basic client/server and TCP socket code
+
     2 hours make the server support concurrent clients requests, and continuous client requests
+
     2 hours corner cases test, boundary cases test , garbage input test, error handling and bug fixes
+
     2 hours test client code implemenation, data collection and graph plotting
+
     2 hours performance and scaling test, data analysis and bug fix 
+
     1 hour build scripting on different target
+
     1 hour publishing code and results to GitHub Repository
 
 
