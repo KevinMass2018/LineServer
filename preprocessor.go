@@ -1,7 +1,7 @@
 package main
 
 import (
-       "fmt"
+       "log"
        "bufio"
        "os"
        "encoding/binary"
@@ -39,7 +39,7 @@ var total_line_num uint64
 func line_svr_preprocessor(filename string) int {
 
 
-     fmt.Println("Text File Preprocessor  Starts -----    ")
+     log.Println("Text File Preprocessor  Starts -----    ")
 
      /* Open the to-be-served file. Assume this file pre-exists */
 
@@ -98,7 +98,7 @@ func line_svr_preprocessor(filename string) int {
     
     /* Save the total line number */
     total_line_num = line_num
-
-    fmt.Println("Text File Preprocessor  Ends -----    ")
+    log.Println(" **** Total Line Number: ", total_line_num, "****")
+    log.Println("Text File Preprocessor  Ends -----    ")
     return SERVER_SUCCESS
 }

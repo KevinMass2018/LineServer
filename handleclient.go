@@ -2,12 +2,12 @@ package main
 
 import (
        "os"
-       "fmt"
        "net"
        "strings"
        "strconv"
        "bufio"
        "encoding/binary"
+       "log"
 )
 
 /*
@@ -33,7 +33,7 @@ func handleClientRequest (conn net.Conn, req_chan  *chan string, filename string
 	 if (err != nil) {
 
 	     checkError(err)
-	     fmt.Println("S <= ERR")
+	     log.Println("S <= ERR")
              conn.Write([]byte("ERR"))
 	     return
 	 }
@@ -45,21 +45,31 @@ func handleClientRequest (conn net.Conn, req_chan  *chan string, filename string
           */
          result_arr := strings.Fields(result)
 
-         fmt.Println("C =>",result)
+         /*
+          * When logging the input the server logs,
+          * don't include the last character \n
+          */
+         var result_str string
+
+         for i:=0; i < len(result_arr)-1; i++ {
+             result_str += result_arr[i]+" "
+         }
+
+         log.Println("C =>",result_str)
 
 	 
 	 ret := processRequest(conn, result_arr, req_chan, filename)	 	 	 
 	 switch  ret  {
 	     case CLIENT_QUIT :  // client QUIT
 
-              	 fmt.Println("Client sent QUIT")
-              	 fmt.Println("S <=  Connection Closed")
+              	 log.Println("C => Client sent QUIT")
+              	 log.Println("S <=  Connection Closed")
               	 conn.Write([]byte("Connection Closed"))    
 		 return
 
 	     case CLIENT_INVALID  :  // client invalid input
-	     	 fmt.Println("S <= ERR")
-              	 conn.Write([]byte("ERR"))
+	     	 log.Println("S <= Client request invalid")
+              	 conn.Write([]byte("Client request invalid"))
 	         continue
 
 	     case CLIENT_SHUTDOWN :  // client send shut
@@ -68,8 +78,8 @@ func handleClientRequest (conn net.Conn, req_chan  *chan string, filename string
 	       	  * send it to the control channel and handle
                	  * it in a separate thread
                	  */
-              	 fmt.Println("Client sent SHUTDOWN")
-              	 fmt.Println("S <= Server Shutdown")
+              	 log.Println("Client sent SHUTDOWN")
+              	 log.Println("S <= Server Shutdown")
               	 conn.Write([]byte("Server SHUTDOWN"))
 
               	 *req_chan <- "SHUTDOWN"
@@ -82,12 +92,12 @@ func handleClientRequest (conn net.Conn, req_chan  *chan string, filename string
 		  continue
 
              case SERVER_FAIL    :  // continue the thread for now
-                 fmt.Println("S <= ERR")
-                 conn.Write([]byte("ERR"))
+                 log.Println("S <= Server failure")
+                 conn.Write([]byte("Server failure"))
                  continue
 
 	     default :
-	         fmt.Println("S <= ERR")
+	         log.Println("S <= ERR")
               	 conn.Write([]byte("ERR"))
                  continue	 
  	 }
@@ -181,8 +191,8 @@ func  processGetRequest  (conn net.Conn,  result_arr []string,
             return SERVER_FAIL
       	 }
 
-         fmt.Println("S <= OK")
-         fmt.Println("S <=",linecontent)
+         log.Println("S <= OK")
+         log.Println("S <=",linecontent)
 
 
 	 return CLIENT_VALID
@@ -237,7 +247,7 @@ func  getContentbyLine (orig_line uint64, filename string,
       rd := bufio.NewReader(mapfile)
 
       if rd == nil {
-         fmt.Println("Map file reader can not be initialized")
+         log.Println("Map file reader can not be initialized")
          return SERVER_FAIL
       }
 
@@ -271,7 +281,7 @@ func  getContentbyLine (orig_line uint64, filename string,
        */
 
       orig_file, err := os.Open(filename)
-      if err != nil {
+      if orig_file ==nil || err != nil {
          checkError(err)
          return SERVER_FAIL
       }
@@ -289,7 +299,7 @@ func  getContentbyLine (orig_line uint64, filename string,
       rd_orig := bufio.NewReader(orig_file)
 
       if rd_orig == nil {
-         fmt.Println("Original file reader can not be initialized")
+         log.Println("Original file reader can not be initialized")
          return SERVER_FAIL
       }
 
@@ -311,7 +321,7 @@ func  getContentbyLine (orig_line uint64, filename string,
  */
 func checkError(err error) {
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Encounting error: %s\n", err.Error())
+        log.Println("Encounting error: ", err.Error())
     }
 }
 

@@ -18,9 +18,11 @@ Usage of ./main:
     	complete filename includes path, a string (default "test_file.txt")
   -p int
     	port number, an integer (default 54321)
+  -serverlogfile string
+    		 server log file name, a string (default "serverlogfile.txt")
 
-For example, if the server want to serving the file /users/peter/temp/file1.txt with the TCP port 12345, the running command is:
-    ./run.sh  -p=12345 -file="/users/peter/temp/file1.txt"
+For example, if the server want to serving the file /users/peter/temp/file1.txt with the TCP port 12345, and the log file in local directory as log.txt,  the running command is:
+    ./run.sh  -p=12345 -file="/users/peter/temp/file1.txt" -serverlogfile="log.txt"
     
 The design considerations:
 

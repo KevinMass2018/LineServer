@@ -5,8 +5,9 @@ import (
        "net"
        "flag"
        "strconv"
+       "log"
+       "os"
 )
-
 
 func main() {
      fmt.Println("/*******************************/")
@@ -15,6 +16,10 @@ func main() {
 
      filename  :=  flag.String("filename", "test_file.txt", 
      	      	  	      "complete filename includes path, a string")
+
+     log_file  := flag.String("serverlogfile", "serverlogfile.txt",
+                              "server log file name, a string") 
+
      portnum  :=  flag.Int("p", 54321, "port number, an integer")
     
      flag.Parse()
@@ -27,6 +32,22 @@ func main() {
      if ret != SERVER_SUCCESS {
      	return
      }     	
+
+     /* Create server log file and log server output to this file */
+
+     logfile, err := os.Create(*log_file)
+     if err != nil  {
+        checkError(err)
+        return
+     }
+
+     if logfile == nil {
+        return
+     }
+
+     defer logfile.Close()
+     log.SetOutput(logfile)
+
 
      service := ":"+strconv.Itoa(*portnum)
      
