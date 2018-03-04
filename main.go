@@ -6,7 +6,7 @@ import (
        "flag"
        "strconv"
        "log"
-       "os"
+       "gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
@@ -34,19 +34,13 @@ func main() {
      }     	
 
      /* Create server log file and log server output to this file */
-
-     logfile, err := os.Create(*log_file)
-     if err != nil  {
-        checkError(err)
-        return
-     }
-
-     if logfile == nil {
-        return
-     }
-
-     defer logfile.Close()
-     log.SetOutput(logfile)
+     log.SetOutput(&lumberjack.Logger{
+	Filename:   *log_file,
+    	MaxSize:    1, // megabytes
+    	MaxBackups: 5,
+    	MaxAge:     30, //days
+    	Compress:   false, // disabled by default
+     })
 
 
      service := ":"+strconv.Itoa(*portnum)

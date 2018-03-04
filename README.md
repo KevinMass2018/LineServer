@@ -34,6 +34,8 @@ When client sends "GET nnnn" request, the server processes it, calculates the lo
 
 The server also handles client request like "SHUTDOWN", which will shutdown the server; "QUIT", which will disconnect this client, and stop the thread for this client.  In case client sends garbage request, SERVER processes it, sends back an "ERR" msg, and continue. 
 
+The server transaction log is rotately saved in a log file. Once the log file reaches max 500MB, it is archived into a backup. Maximumly five backups can be archived. Then the oldest archive log file will be removed. 
+
 
 Test Cases:
 
@@ -80,7 +82,7 @@ For multiple clients case, increasing client request rate from 100 to 1000 make 
 
 
 
-Used package includes: bufio, os, net, strconv, encoding/binary, fmt, flag, time, strings, github.com/Arafatk/glot
+Used package includes: bufio, os, net, strconv, encoding/binary, fmt, flag, time, strings, github.com/Arafatk/glot, gopkg.in/natefinch/lumberjack.v2
 
 During this work, the following WebPage is consulted:  
 
